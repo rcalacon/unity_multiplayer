@@ -8,7 +8,6 @@ public class Boid : MonoBehaviour
     public Vector3 Velocity;
     public List<Transform> Neighbors;
 
-    // Constructor with args
     public Boid(Vector3 position, Vector3 velocity)
     {
         Position = position;
@@ -17,12 +16,7 @@ public class Boid : MonoBehaviour
         gameObject.transform.rotation = Quaternion.LookRotation(Vector3.Normalize(velocity));
     }
 
-    //-------------
-    // UpdateBoid
-    //-------------
-    // Updates Position and Velocity of the Boid and moves the transform with the geometry attached.
-    //-------------
-    public void UpdateBoid(Vector3 position, Vector3 velocity)
+    public void ApplyFlockUpdates(Vector3 position, Vector3 velocity)
     {
         Position = position;
         Velocity = velocity;
@@ -30,66 +24,48 @@ public class Boid : MonoBehaviour
         gameObject.transform.rotation = Quaternion.LookRotation(Vector3.Normalize(velocity));
     }
 
-    //------------------
-    // UpdateNeighbors
-    //------------------
-    // Finds neighbors by distance and updates Neighbor List.
-    //------------------
     public void UpdateNeighbors(List<Transform> boids, float distance)
     {
         var neighbors = new List<Transform>();
 
-        for (var i = 0; i < boids.Count; ++i)
+        for (var neighborIndex = 0; neighborIndex < boids.Count; neighborIndex++)
         {
-            if (Position != boids[i].position)
+            if (Position != boids[neighborIndex].position)
             {
-                if (Vector3.Distance(boids[i].position, Position) < distance)
+                if (Vector3.Distance(boids[neighborIndex].position, Position) < distance)
                 {
-                    neighbors.Add(boids[i]);
+                    neighbors.Add(boids[neighborIndex]);
                 }
             }
         }
         Neighbors = neighbors;
     }
 
-    //===========
-    // Behaviors
-    //===========
-
-    //-----------
-    // Cohesion
-    //-----------
-    public Vector3 Cohesion(float steps, float weight)
+    public Vector3 Cohesion(float cohesionSteps, float weight)
     {
-        var pc = Vector3.zero;    // Perceived Center of Neighbors
+        var perceivedCenter = Vector3.zero;
 
-        if (Neighbors.Count == 0 || steps < 1) return pc;
+        if (Neighbors.Count == 0 || cohesionSteps < 1) return perceivedCenter;
 
-        // Add up the positions of the neighbors
-        for (var i = 0; i < Neighbors.Count; ++i)
+        for (var neighborIndex = 0; neighborIndex < Neighbors.Count; neighborIndex++)
         {
-            var neighbor = Neighbors[i].GetComponent<Boid>();
-            if (pc == Vector3.zero)
+            var neighbor = Neighbors[neighborIndex].GetComponent<Boid>();
+            if (perceivedCenter == Vector3.zero)
             {
-                pc = neighbor.Position;
+                perceivedCenter = neighbor.Position;
             }
             else
             {
-                pc = pc + neighbor.Position;
+                perceivedCenter = perceivedCenter + neighbor.Position;
             }
         }
-        // Average the neighbor's positions
-        pc = pc / Neighbors.Count;
-        // Return the offset vector, divide by steps (100 would mean 1% towards center) and multiply by weight
-        return (pc - Position) / steps * weight;
+        perceivedCenter = perceivedCenter / Neighbors.Count;
+        return (perceivedCenter - Position) / cohesionSteps * weight;
     }
 
-    //-------------
-    // Separation
-    //-------------
     public Vector3 Separation(float weight)
     {
-        var c = Vector3.zero;    // Center point of a move away from close neighbors
+        var c = Vector3.zero;
 
         for (var i = 0; i < Neighbors.Count; ++i)
         {
@@ -101,50 +77,36 @@ public class Boid : MonoBehaviour
         return c * weight;
     }
 
-    //------------
-    // Alignment
-    //------------
     public Vector3 Alignment(float weight)
     {
-        Vector3 pv = Vector3.zero;    // Perceived Velocity of Neighbors
+        Vector3 pv = Vector3.zero;
 
         if (Neighbors.Count == 0) return pv;
 
-        for (var i = 0; i < Neighbors.Count; ++i)
+        for (var neighborIndex = 0; neighborIndex < Neighbors.Count; neighborIndex++)
         {
-            var neighbor = Neighbors[i].GetComponent<Boid>();
+            var neighbor = Neighbors[neighborIndex].GetComponent<Boid>();
             pv = pv + neighbor.Velocity;
         }
-        // Average the velocities
         if (Neighbors.Count > 1)
         {
             pv = pv / (Neighbors.Count);
         }
-        // Return the offset vector multiplied by weight
         return (pv - Velocity) * weight;
     }
 
-    //-------
-    // Seek
-    //-------
-    public Vector3 Seek(Transform target, float weight)
+    public Vector3 Seek(Transform target)
     {
-        if (weight < 0.0001f) return Vector3.zero;
-
-        var desiredVelocity = (target.position - Position) * weight;
+        var desiredVelocity = (target.position - Position);
         return desiredVelocity - Velocity;
     }
 
-    //------------
-    // Socialize
-    //------------
-    public Vector3 Socialize(List<Transform> boids, float weight)
+    public Vector3 Socialize(List<Transform> boids)
     {
-         var pc = Vector3.zero;    // Perceived Center of the rest of the flock
+         var pc = Vector3.zero; 
 
         if (Neighbors.Count != 0) return pc;
 
-        // Add up the positions of all other boids
         for (var i = 0; i < boids.Count; ++i)
         {
             var boid = boids[i].GetComponent<Boid>();
@@ -160,18 +122,13 @@ public class Boid : MonoBehaviour
                 }
             }
         }
-        // Average the positions
         if (boids.Count > 1)
         {
             pc = pc / (boids.Count - 1);
         }
-        // Normalize the offset vector, divide by steps (100 would mean 1% towards center) and multiply by weight
-        return Vector3.Normalize(pc - Position) * weight;
+        return Vector3.Normalize(pc - Position);
     }
 
-    //----------
-    // Arrival
-    //----------
     public Vector3 Arrival(Transform target, float slowingDistance, float maxSpeed)
     {
         var desiredVelocity = Vector3.zero;
@@ -186,32 +143,6 @@ public class Boid : MonoBehaviour
             desiredVelocity = (clippedSpeed / distance) * targetOffset;
         }
         return desiredVelocity - Velocity;
-    }
-
-
-    //===========
-    // Utilities
-    //===========
-
-    //--------------------
-    // GetNeighborsArray
-    //--------------------
-    public Transform[] GetNeighborsArray()
-    {
-        return Neighbors.ToArray();
-    }
-
-    //-----------------
-    // PrintNeighbors
-    //-----------------
-    public void PrintNeighbors()
-    {
-        Debug.LogFormat("Neighbors: {0}", Neighbors.Count);
-        for (var i = 0; i < Neighbors.Count; ++i)
-        {
-            var neighbor = Neighbors[i].GetComponent<Boid>();
-            Debug.LogFormat("X: {0}  Y: {1}  Z: {2}", neighbor.Position.x, neighbor.Position.y, neighbor.Position.z);
-        }
     }
 
     public Vector3 LimitVelocity(Vector3 v, float limit)
