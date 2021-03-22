@@ -37,11 +37,10 @@ public class BoidsController : MonoBehaviour
     private string TreeTargetName = "TreeTarget";
     private string LeaderTargetName = "LeaderTarget";
     private Vector3 lazyFollowPosition = new Vector3(0f, 1f, -7f);
-    private Quaternion lazyFollowRotation = new Quaternion(0f, 0f, 0f, 0f);
+    private Vector3 lazyFollowRotation = new Vector3(0f, 0f, 0f);
     private Vector3 treePosition = new Vector3(0f, 5f, -7f);
-    private Quaternion treeRotation = new Quaternion(40f, 0f, 0f, 0f);
+    private Vector3 treeRotation = new Vector3(40f, 0f, 0f);
 
-    // Use this for initialization
     private void Start()
     {
         for (var i = 0; i < NumberOfBoids; ++i)
@@ -53,13 +52,11 @@ public class BoidsController : MonoBehaviour
             _boids.Add(transform);
         }
 
-        //	    StartCoroutine(UpdateOnFrame());
 
         for (var i = 0; i < _boids.Count; ++i)
         {
             var boid = _boids[i].GetComponent<Boid>();
             boid.UpdateNeighbors(_boids, NeighborDistance);
-            //	        boid.PrintNeighbors();
         }
     }
 
@@ -92,21 +89,24 @@ public class BoidsController : MonoBehaviour
         {
             case LAZY_FLIGHT_CODE:
                 GameObject.Find("Main Camera").transform.position = lazyFollowPosition;
-                GameObject.Find("Main Camera").transform.rotation = lazyFollowRotation;
+                GameObject.Find("Main Camera").transform.eulerAngles = lazyFollowRotation;
+                GameObject.Find(LeaderTargetName).GetComponent<Renderer>().enabled = false;
                 MaxVelocity = 0.05f;
                 MaxRotationAngle = 7f;
                 Target = GameObject.Find(LazyTargetName).transform;
                 break;
             case CIRCLE_TREE_CODE:
                 GameObject.Find("Main Camera").transform.position = treePosition;
-                GameObject.Find("Main Camera").transform.rotation = treeRotation;
+                GameObject.Find("Main Camera").transform.eulerAngles = treeRotation;
+                GameObject.Find(LeaderTargetName).GetComponent<Renderer>().enabled = false;
                 MaxVelocity = 0.04f;
                 MaxRotationAngle = 2f;
                 Target = GameObject.Find(TreeTargetName).transform;
                 break;
             case FOLLOW_THE_LEADER:
                 GameObject.Find("Main Camera").transform.position = lazyFollowPosition;
-                GameObject.Find("Main Camera").transform.rotation = lazyFollowRotation;
+                GameObject.Find("Main Camera").transform.eulerAngles = lazyFollowRotation;
+                GameObject.Find(LeaderTargetName).GetComponent<Renderer>().enabled = true;
                 MaxVelocity = 0.02f;
                 MaxRotationAngle = 7f;
                 Target = GameObject.Find(LeaderTargetName).transform;
@@ -117,7 +117,6 @@ public class BoidsController : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
     private void Update()
     {
         UpdateBoids();

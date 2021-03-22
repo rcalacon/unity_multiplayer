@@ -24,7 +24,6 @@ public class TreeTarget : MonoBehaviour
 
     void UpdatePosition()
     {
-        print("in update");
         if (positionIndex == 3) positionIndex = 0;
         else positionIndex++;
         gameObject.transform.position = positions[positionIndex];
