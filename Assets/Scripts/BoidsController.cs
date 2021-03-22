@@ -12,7 +12,7 @@ public class BoidsController : MonoBehaviour
     //Boids
     private int NumberOfBoids = 20;
     private float NeighborDistance = 0.8f;        // 0.8
-    private float MaxVelocity = 0.03f;
+    private float MaxVelocity = 0.02f;
     private float MaxRotationAngle = 7f;
     private Vector3 InitialVelocity;
     //Cohesion
@@ -33,8 +33,9 @@ public class BoidsController : MonoBehaviour
     private const int LAZY_FLIGHT_CODE = 0;
     private const int CIRCLE_TREE_CODE = 1;
     private const int FOLLOW_THE_LEADER = 2;
+    private string LazyTargetName = "LazyTarget";
     private string TreeTargetName = "Tree";
-    private string LeaderTargetName = "Target";
+    private string LeaderTargetName = "LeaderTarget";
 
     // Use this for initialization
     private void Start()
@@ -86,11 +87,14 @@ public class BoidsController : MonoBehaviour
         switch (flockCode)
         {
             case LAZY_FLIGHT_CODE:
+                MaxVelocity = 0.05f;
+                Target = GameObject.Find(LazyTargetName).transform;
                 break;
             case CIRCLE_TREE_CODE:
                 Target = GameObject.Find(TreeTargetName).transform;
                 break;
             case FOLLOW_THE_LEADER:
+                MaxVelocity = 0.02f;
                 Target = GameObject.Find(LeaderTargetName).transform;
                 break;
             default:
