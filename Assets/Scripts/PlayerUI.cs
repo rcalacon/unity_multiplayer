@@ -21,11 +21,6 @@ namespace Com.MyCompany.MyGame
         [SerializeField]
         private Text playerNameText;
 
-
-        [Tooltip("UI Slider to display Player's Health")]
-        [SerializeField]
-        private Slider playerHealthSlider;
-
         private PlayerManager target;
 
         float characterControllerHeight = 0f;
@@ -47,11 +42,6 @@ namespace Com.MyCompany.MyGame
 
         void Update()
         {
-            // Reflect the Player Health
-            if (playerHealthSlider != null)
-            {
-                playerHealthSlider.value = target.Health;
-            }
             // Destroy itself if the target is null, It's a fail safe when Photon is destroying Instances of a Player over the network
             if (target == null)
             {

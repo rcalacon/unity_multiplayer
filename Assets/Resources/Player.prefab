@@ -15,7 +15,6 @@ GameObject:
   - component: {fileID: 5353241327225979013}
   - component: {fileID: -4490299874597862289}
   - component: {fileID: 2295778653982276638}
-  - component: {fileID: 2295778653982276639}
   - component: {fileID: -8783072288494464160}
   - component: {fileID: 1720168136059590584}
   m_Layer: 0
@@ -65,7 +64,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10302, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 40db05b0756f19c43ae471505d9b8ce5, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -111,9 +110,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f1d0ffcca36ccb40a0e4dc69ef4111e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PlayerUiPrefab: {fileID: 0}
-  beams: {fileID: 0}
-  Health: 1
+  PlayerUiPrefab: {fileID: 8294841888867284593, guid: 57e9b9391d3f73f43b39fc5d69b5bf03,
+    type: 3}
+  speedLimit: 10
+  jumpForce: 1
 --- !u!114 &-4490299874597862289
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -147,20 +147,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &2295778653982276639
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2295778653982276636}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 001494091edfb1448a6051a8b94fd20c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  speedLimit: 10
-  jumpForce: 1
 --- !u!114 &-8783072288494464160
 MonoBehaviour:
   m_ObjectHideFlags: 0
