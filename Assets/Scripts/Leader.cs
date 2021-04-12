@@ -12,7 +12,7 @@ public class Leader : MonoBehaviour
 
     void SetRandomPos()
     {
-        newPosition = new Vector3(Random.Range(-10f, 0f), Random.Range(1f, 3f), Random.Range(-5f, 5f));
+        newPosition = new Vector3(Random.Range(-10f, 0f), 6.0f, Random.Range(-5f, 5f));
     }
 
     // Update is called once per frame
